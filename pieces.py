@@ -10,10 +10,7 @@ class Piece(pg.sprite.Sprite):
         self._color = color
         self.field_name = field_name
 
+
 class Rook(Piece):
     def __init__(self, cell_size: int, color: str, field: str):
         super().__init__(cell_size, color, field, '_rook.png')
-
-class Empty(Piece):
-    def __init__(self, cell_size: int, color: str, field: str):
-        super().__init__(cell_size, color, field, '_empty.png')

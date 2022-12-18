@@ -14,3 +14,7 @@ while run:
         if event.type == pg.QUIT:
             pg.quit()
             run = False
+        if event.type == pg.MOUSEBUTTONDOWN:
+            playboard.btn_down(event.button, event.pos)
+        if event.type == pg.MOUSEBUTTONUP:
+            playboard.btn_up(event.button, event.pos)
