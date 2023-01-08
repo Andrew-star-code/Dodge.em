@@ -56,7 +56,7 @@ class GameState:
             if r + 1 <= 7:
                 if self.board[r + 1][c] == "--":
                     moves.append(Move((r, c), (r + 1, c), self.board))
-            if c + 1 <= 7:
+            if c + 1 <= 6:
                 if self.board[r][c + 1] == "--":
                     moves.append(Move((r, c), (r, c + 1), self.board))
             if c - 1 >= 1:
