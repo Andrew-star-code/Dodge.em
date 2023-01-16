@@ -2,6 +2,7 @@ import pygame as p
 import tkinter as tk
 from tkinter import messagebox
 import Engine
+import ComputerMoveManager
 
 
 WIDTH = HEIGHT = 512
@@ -31,12 +32,20 @@ def main():
     running = True
     sqSelected = ()
     playerClicks = []
+    firstPlayer = True
+    secondPlayer = False
+    checkMate = False
     while running:
+        humanTurn = (gs.whiteToMove and firstPlayer) or (not gs.whiteToMove and secondPlayer)
         for e in p.event.get():
             if e.type == p.QUIT:
                 running = False
+            elif e.type == p.KEYDOWN:
+                if e.key == p.K_z:
+                    gs.undoMove()
+                    moveMade = True
             elif e.type == p.MOUSEBUTTONDOWN:
-                if not gs.gameOver:
+                if not gs.gameOver and humanTurn:
                     location = p.mouse.get_pos()
                     col = location[0] // SQ_SIZE
                     row = location[1] // SQ_SIZE
@@ -49,12 +58,23 @@ def main():
                     if len(playerClicks) == 2:
                         move = Engine.Move(playerClicks[0], playerClicks[1], gs.board)
                         if move in validMoves:
-                            gs.makeMove(move)
+                            gs.makePlayerMove(move)
                             moveMade = True
                             sqSelected = ()
                             playerClicks = []
                         else:
                             playerClicks = [sqSelected]
+
+        if not gs.gameOver and not humanTurn:
+            computerMove = ComputerMoveManager.findOptimalMove(gs, validMoves)
+            if computerMove is not None:
+                gs.makeComputerMove(computerMove)
+                gs.pieceEscaped = False
+                gs.moveForward = False
+                moveMade = True
+            else:
+                moveMade = True
+
 
         if moveMade:
             validMoves = gs.getValidMoves()
@@ -63,29 +83,64 @@ def main():
         clock.tick(MAX_FPS)
         p.display.flip()
 
-        if gs.gameOver:
+
+        if not checkMate:
+            if gs.gameOver:
+                if gs.whiteToMove:
+                    msg_box = tk.messagebox.askquestion('Победа Черных',
+                                                        'Выйти из приложения?',
+                                                        icon='warning')
+                    if msg_box == 'yes':
+                        p.display.quit()
+                        p.quit()
+                    else:
+                        gs = Engine.GameState()
+                        validMoves = gs.getValidMoves()
+                        sqSelected = ()
+                        playerClicks = []
+                        moveMade = False
+
+                else:
+                    msg_box = tk.messagebox.askquestion('Победа Белых',
+                                                        'Выйти из приложения?',
+                                                        icon='warning')
+                    if msg_box == 'yes':
+                        p.display.quit()
+                        p.quit()
+                    else:
+                        p.display.set_caption('Компьютерная логическая игра "Доджем"')
+                        gs = Engine.GameState()
+                        validMoves = gs.getValidMoves()
+                        sqSelected = ()
+                        playerClicks = []
+                        moveMade = False
+        else:
             if gs.whiteToMove:
-                msg_box = tk.messagebox.askquestion('Победа Черных',
+                msg_box = tk.messagebox.askquestion('Победа Черных через Бутырскую Тюрьму',
                                                     'Выйти из приложения?',
                                                     icon='warning')
                 if msg_box == 'yes':
                     p.display.quit()
                     p.quit()
                 else:
+                    gs.gameOver = False
+                    checkMate = False
                     gs = Engine.GameState()
-                    validMoves= gs.getValidMoves()
+                    validMoves = gs.getValidMoves()
                     sqSelected = ()
                     playerClicks = []
                     moveMade = False
 
             else:
-                msg_box = tk.messagebox.askquestion('Победа Белых',
+                msg_box = tk.messagebox.askquestion('Победа Белых через Бутырскую Тюрьму',
                                                     'Выйти из приложения?',
                                                     icon='warning')
                 if msg_box == 'yes':
                     p.display.quit()
                     p.quit()
                 else:
+                    gs.gameOver = False
+                    checkMate = False
                     p.display.set_caption('Компьютерная логическая игра "Доджем"')
                     gs = Engine.GameState()
                     validMoves = gs.getValidMoves()

@@ -1,4 +1,3 @@
-import pygame as p
 class GameState:
     def __init__(self):
         self.board = [
@@ -10,33 +9,14 @@ class GameState:
             ["--", "--", "--", "--", "--", "--", "bp"],
             ["--", "--", "--", "--", "--", "--", "--"],
         ]
+
         self.whiteToMove = True
         self.moveLog = []
+        self.gameOver = False
         self.whiteScore = 0
         self.blackScore = 0
-        self.gameOver = False
-
-    def makeMove(self, move):
-        self.board[move.startRow][move.startCol] = "--"
-        self.board[move.endRow][move.endCol] = move.pieceMoved
-        self.moveLog.append(move)
-        self.whiteToMove = not self.whiteToMove
-        if self.whiteToMove:
-            p.display.set_caption('Ход белых')
-        else:
-            p.display.set_caption('Ход черных')
-        if move.isPieceEscape:
-            self.board[move.endRow][move.endCol] = "--"
-            if self.whiteToMove:
-                self.blackScore += 1
-                if self.blackScore == 5:
-                    self.gameOver = True
-            else:
-                self.whiteScore += 1
-                if self.whiteScore == 5:
-                    self.gameOver = True
-
-
+        self.pieceEscaped = False
+        self.moveForward = False
     def getValidMoves(self):
         moves = []
         moves = self.getAllPossibleMoves()
@@ -76,6 +56,61 @@ class GameState:
 
 
 
+    def testMove(self, move):
+        self.board[move.startRow][move.startCol] = "--"
+        self.board[move.endRow][move.endCol] = move.pieceMoved
+        self.moveLog.append(move)
+        self.whiteToMove = not self.whiteToMove
+        if move.isMoveForward:
+            self.moveForward = True
+        if move.isPieceEscape:
+            self.board[move.endRow][move.endCol] = "--"
+            self.PieceEscape = True
+
+
+    def makePlayerMove(self, move):
+        self.board[move.startRow][move.startCol] = "--"
+        self.board[move.endRow][move.endCol] = move.pieceMoved
+        self.moveLog.append(move)
+        self.whiteToMove = not self.whiteToMove
+        if move.isPieceEscape:
+            self.board[move.endRow][move.endCol] = "--"
+            if self.whiteToMove:
+                self.blackScore += 1
+                if self.blackScore == 5:
+                    self.gameOver = True
+            else:
+                self.whiteScore += 1
+                if self.whiteScore == 5:
+                    self.gameOver = True
+
+
+
+    def makeComputerMove(self, move):
+        self.board[move.startRow][move.startCol] = "--"
+        self.board[move.endRow][move.endCol] = move.pieceMoved
+        self.moveLog.append(move)
+        self.whiteToMove = not self.whiteToMove
+        if move.isPieceEscape:
+            self.board[move.endRow][move.endCol] = "--"
+            if self.whiteToMove:
+                self.blackScore += 1
+                if self.blackScore == 5:
+                    self.gameOver = True
+            else:
+                self.whiteScore += 1
+                if self.whiteScore == 5:
+                    self.gameOver = True
+
+
+
+    def undoMove(self):
+        if len(self.moveLog) != 0:
+            move = self.moveLog.pop()
+            self.board[move.startRow][move.startCol] = move.pieceMoved
+            self.board[move.endRow][move.endCol] = "--"
+            self.whiteToMove = not self.whiteToMove
+
 
 class Move():
     ranksToRows = {"1": 6, "2": 5, "3": 4, "4": 3, "5": 2, "6": 1, "7": 0}
@@ -89,8 +124,11 @@ class Move():
         self.endCol = endSq[1]
         self.pieceMoved = board[self.startRow][self.startCol]
         self.isPieceEscape = False
+        self.isMoveForward = False
         if (self.pieceMoved == 'wp' and self.endRow == 6) or (self.pieceMoved == 'bp' and self.endCol == 0):
             self.isPieceEscape = True
+        if (self.pieceMoved == 'wp' and self.endRow < self.startRow) or (self.pieceMoved == 'bp' and self.endCol < self.startCol):
+            self.isMoveForward = True
         self.moveID = self.startRow * 1000 + self.startCol * 100 + self.endRow * 10 + self.endCol
 
 
