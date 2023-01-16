@@ -127,7 +127,7 @@ class Move():
         self.isMoveForward = False
         if (self.pieceMoved == 'wp' and self.endRow == 6) or (self.pieceMoved == 'bp' and self.endCol == 0):
             self.isPieceEscape = True
-        if (self.pieceMoved == 'wp' and self.endRow < self.startRow) or (self.pieceMoved == 'bp' and self.endCol < self.startCol):
+        if (self.pieceMoved == 'wp' and self.endRow > self.startRow) or (self.pieceMoved == 'bp' and self.endCol < self.startCol):
             self.isMoveForward = True
         self.moveID = self.startRow * 1000 + self.startCol * 100 + self.endRow * 10 + self.endCol
 
