@@ -24,5 +24,5 @@ def findOptimalMove(gs, validMoves):
             maxScore = score
             bestMove = playerMove
         gs.undoMove()
-
+    print(score)
     return bestMove

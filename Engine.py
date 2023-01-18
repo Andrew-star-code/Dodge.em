@@ -6,7 +6,7 @@ class GameState:
             ["--", "--", "--", "--", "--", "--", "bp"],
             ["--", "--", "--", "--", "--", "--", "bp"],
             ["--", "--", "--", "--", "--", "--", "bp"],
-            ["--", "--", "--", "--", "--", "--", "bp"],
+            ["--", "bp", "--", "--", "--", "--", "bp"],
             ["--", "--", "--", "--", "--", "--", "--"],
         ]
 
@@ -61,11 +61,11 @@ class GameState:
         self.board[move.endRow][move.endCol] = move.pieceMoved
         self.moveLog.append(move)
         self.whiteToMove = not self.whiteToMove
-        if move.isMoveForward:
-            self.moveForward = True
         if move.isPieceEscape:
             self.board[move.endRow][move.endCol] = "--"
-            self.PieceEscape = True
+            self.pieceEscaped = True
+        if move.isMoveForward:
+            self.moveForward = True
 
 
     def makePlayerMove(self, move):
