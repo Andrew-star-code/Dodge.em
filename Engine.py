@@ -6,23 +6,20 @@ class GameState:
             ["--", "--", "--", "--", "--", "--", "bp"],
             ["--", "--", "--", "--", "--", "--", "bp"],
             ["--", "--", "--", "--", "--", "--", "bp"],
-            ["--", "bp", "--", "--", "--", "--", "bp"],
+            ["--", "--", "--", "--", "--", "--", "bp"],
             ["--", "--", "--", "--", "--", "--", "--"],
         ]
 
-        self.whiteToMove = True
-        self.moveLog = []
-        self.gameOver = False
-        self.whiteScore = 0
-        self.blackScore = 0
-        self.pieceEscaped = False
-        self.moveForward = False
-    def getValidMoves(self):
-        moves = []
-        moves = self.getAllPossibleMoves()
-        return moves
+        self.whiteToMove = True # Текущий ход
+        self.moveLog = [] # История ходов
+        self.gameOver = False # Переменная окончания игры
+        self.whiteScore = 0 # Очки белых
+        self.blackScore = 0 # Очки черных
+        self.pieceEscaped = False # Отслеживание сбегающих шашек
+        self.moveForward = False # Отслеживание результативных ходов
 
-    def getAllPossibleMoves(self):
+    # Получение допустимых ходов
+    def getValidMoves(self):
         moves = []
         for r in range(len(self.board)):
             for c in range(len(self.board[r])):
@@ -55,7 +52,7 @@ class GameState:
                     moves.append(Move((r, c), (r - 1, c), self.board))
 
 
-
+    # Функция пробного хода
     def testMove(self, move):
         self.board[move.startRow][move.startCol] = "--"
         self.board[move.endRow][move.endCol] = move.pieceMoved
@@ -67,7 +64,7 @@ class GameState:
         if move.isMoveForward:
             self.moveForward = True
 
-
+    # Функция хода игрока
     def makePlayerMove(self, move):
         self.board[move.startRow][move.startCol] = "--"
         self.board[move.endRow][move.endCol] = move.pieceMoved
@@ -85,7 +82,7 @@ class GameState:
                     self.gameOver = True
 
 
-
+    # Функция хода компьютера
     def makeComputerMove(self, move):
         self.board[move.startRow][move.startCol] = "--"
         self.board[move.endRow][move.endCol] = move.pieceMoved
@@ -103,7 +100,7 @@ class GameState:
                     self.gameOver = True
 
 
-
+    # Функция удаления последнего хода
     def undoMove(self):
         if len(self.moveLog) != 0:
             move = self.moveLog.pop()
@@ -131,21 +128,15 @@ class Move():
             self.isMoveForward = True
         self.moveID = self.startRow * 1000 + self.startCol * 100 + self.endRow * 10 + self.endCol
 
-
+    # Переопределение метода equals для правильного сравнения ходов
     def __eq__(self, other):
         if isinstance(other, Move):
             return self.moveID == other.moveID
         return False
 
-
-
-
-
+    # Получение координат по нотации Эдвардса
     def getBoardNotation(self):
         return self.getRankFile(self.startRow, self.startCol) + self.getRankFile(self.endRow, self.endCol)
-
-
-
 
     def getRankFile(self, r, c):
         return self.colsToFiles[c] + self.rowsToRanks[r]

@@ -1,11 +1,7 @@
 import random
-fullEscape = 1000
-firstPlayer = True
-secondPlayer = False
+fullEscape = 5
 
-def findMove(validMoves):
-    return validMoves[random.randint(0, len(validMoves)-1)]
-
+# Нахождение оптимального хода для компьютера
 def findOptimalMove(gs, validMoves):
     score = 0
     maxScore = -fullEscape
@@ -17,12 +13,11 @@ def findOptimalMove(gs, validMoves):
         if gs.moveForward:
             score = 1
         if gs.pieceEscaped:
-            score = 5
+            score = 2
         if gs.gameOver:
             score = fullEscape
         if score > maxScore:
             maxScore = score
             bestMove = playerMove
         gs.undoMove()
-    print(score)
     return bestMove

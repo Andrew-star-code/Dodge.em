@@ -4,20 +4,20 @@ from tkinter import messagebox
 import Engine
 import ComputerMoveManager
 
-
+# Конфигурация
 WIDTH = HEIGHT = 512
 DIMENSION = 7
 SQ_SIZE = HEIGHT // DIMENSION
 MAX_FPS = 15
 IMAGES = {}
 
-
+# Подгрузка изображений
 def loadImages():
     pieces = ["wp", "bp"]
     for piece in pieces:
         IMAGES[piece] = p.transform.scale(p.image.load("images/" + piece + ".png"), (SQ_SIZE, SQ_SIZE))
 
-
+# Основной цикл
 def main():
     p.init()
     p.display.set_caption('Компьютерная логическая игра "Доджем"')
@@ -34,16 +34,11 @@ def main():
     playerClicks = []
     firstPlayer = True
     secondPlayer = False
-    checkMate = False
     while running:
         humanTurn = (gs.whiteToMove and firstPlayer) or (not gs.whiteToMove and secondPlayer)
         for e in p.event.get():
             if e.type == p.QUIT:
                 running = False
-            elif e.type == p.KEYDOWN:
-                if e.key == p.K_z:
-                    gs.undoMove()
-                    moveMade = True
             elif e.type == p.MOUSEBUTTONDOWN:
                 if not gs.gameOver and humanTurn:
                     location = p.mouse.get_pos()
@@ -83,48 +78,16 @@ def main():
         clock.tick(MAX_FPS)
         p.display.flip()
 
-
-        if not checkMate:
-            if gs.gameOver:
-                if gs.whiteToMove:
-                    msg_box = tk.messagebox.askquestion('Победа Черных',
-                                                        'Выйти из приложения?',
-                                                        icon='warning')
-                    if msg_box == 'yes':
-                        p.display.quit()
-                        p.quit()
-                    else:
-                        gs = Engine.GameState()
-                        validMoves = gs.getValidMoves()
-                        sqSelected = ()
-                        playerClicks = []
-                        moveMade = False
-
-                else:
-                    msg_box = tk.messagebox.askquestion('Победа Белых',
-                                                        'Выйти из приложения?',
-                                                        icon='warning')
-                    if msg_box == 'yes':
-                        p.display.quit()
-                        p.quit()
-                    else:
-                        p.display.set_caption('Компьютерная логическая игра "Доджем"')
-                        gs = Engine.GameState()
-                        validMoves = gs.getValidMoves()
-                        sqSelected = ()
-                        playerClicks = []
-                        moveMade = False
-        else:
+        # Вывод уведомления об окончании игры
+        if gs.gameOver:
             if gs.whiteToMove:
-                msg_box = tk.messagebox.askquestion('Победа Черных через Бутырскую Тюрьму',
+                msg_box = tk.messagebox.askquestion('Победа Черных',
                                                     'Выйти из приложения?',
                                                     icon='warning')
                 if msg_box == 'yes':
                     p.display.quit()
                     p.quit()
                 else:
-                    gs.gameOver = False
-                    checkMate = False
                     gs = Engine.GameState()
                     validMoves = gs.getValidMoves()
                     sqSelected = ()
@@ -132,15 +95,13 @@ def main():
                     moveMade = False
 
             else:
-                msg_box = tk.messagebox.askquestion('Победа Белых через Бутырскую Тюрьму',
+                msg_box = tk.messagebox.askquestion('Победа Белых',
                                                     'Выйти из приложения?',
                                                     icon='warning')
                 if msg_box == 'yes':
                     p.display.quit()
                     p.quit()
                 else:
-                    gs.gameOver = False
-                    checkMate = False
                     p.display.set_caption('Компьютерная логическая игра "Доджем"')
                     gs = Engine.GameState()
                     validMoves = gs.getValidMoves()
@@ -148,9 +109,7 @@ def main():
                     playerClicks = []
                     moveMade = False
 
-
-
-
+# Выделение квадратов с доступными ходами
 def highlightSquares(screen, gs, validMoves, sqSelected):
     if sqSelected != ():
         r, c = sqSelected
@@ -159,13 +118,13 @@ def highlightSquares(screen, gs, validMoves, sqSelected):
             s.set_alpha(50)
             s.fill(p.Color('Blue'))
             screen.blit(s, (c*SQ_SIZE, r*SQ_SIZE))
-            s.fill(p.Color("yellow"))
+            s.fill(p.Color("Yellow"))
             for move in validMoves:
                 if move.startRow == r and move.startCol == c:
                     screen.blit(s, (move.endCol*SQ_SIZE, move.endRow*SQ_SIZE))
 
 
-
+# Отрисовка доски
 def drawGameState(screen, gs, validMoves, sqSelected):
     drawBoard(screen)
     highlightSquares(screen, gs, validMoves, sqSelected)
