@@ -23,14 +23,14 @@ ui = Ui_MainWindow()
 ui.setupUi(MainWindow)
 MainWindow.show()
 
-#Функция всплывающего оповещения
+# Всплывающие оповещения
 def message(text):
     msg = QMessageBox()
     msg.setWindowTitle("Оповещение")
     msg.setText(text)
     msg.exec()
 
-#Функция шифрования
+# Шифрование
 def Encrypt(word):
     word = list(word)
     key = 7
@@ -51,7 +51,7 @@ def Encrypt(word):
             result += matrix[i][j]
     return result
 
-#Функция дешифрования
+# Дешифрование
 def Decipher(word):
     word = list(word)
     key = 7
@@ -70,7 +70,7 @@ def Decipher(word):
             result += matrix[i][j]
     return result
 
-#Функции считывания логина и пароля
+# Считывание логина и пароля
 def log():
     log = ui.plainTextEditLog.toPlainText()
     return log
@@ -78,12 +78,12 @@ def pas():
     pas = ui.plainTextEditPass.toPlainText()
     return pas
 
-#Функция отчистки полей логина и пароля
+# Очистка полей логина и пароля
 def clear():
     ui.plainTextEditLog.setPlainText("")
     ui.plainTextEditPass.setPlainText("")
 
-#Функция авторизации + работа личного кабинета
+# Авторизации + работа личного кабинета
 def click_auth():
     with open('credentials.txt', 'r') as f:
         flag = 0
@@ -99,7 +99,7 @@ def click_auth():
     else:
         message("Неверный логин или пароль, попробуйте еще раз")
 
-#Функция регистрации
+# Регистрация
 def click_reg():
     with open('login.txt', 'r') as f:
         for row in f:
@@ -135,7 +135,7 @@ def loadImages():
     for piece in pieces:
         IMAGES[piece] = p.transform.scale(p.image.load("images/" + piece + ".png"), (SQ_SIZE, SQ_SIZE))
 
-# Игровой движок
+# Состояние игры
 class GameState:
     def __init__(self):
         self.board = [
@@ -166,6 +166,7 @@ class GameState:
                     self.getPieceMoves(r, c, moves)
         return moves
 
+    # Получение ходов фигуры
     def getPieceMoves(self, r, c, moves):
         if self.whiteToMove:
             if r + 1 <= 7:
@@ -190,7 +191,7 @@ class GameState:
                     moves.append(Move((r, c), (r - 1, c), self.board))
 
 
-    # Функция пробного хода
+    # Пробный ход
     def testMove(self, move):
         self.board[move.startRow][move.startCol] = "--"
         self.board[move.endRow][move.endCol] = move.pieceMoved
@@ -202,7 +203,7 @@ class GameState:
         if move.isMoveForward:
             self.moveForward = True
 
-    # Функция хода игрока
+    # Ход игрока
     def makePlayerMove(self, move):
         self.board[move.startRow][move.startCol] = "--"
         self.board[move.endRow][move.endCol] = move.pieceMoved
@@ -220,7 +221,7 @@ class GameState:
                     self.gameOver = True
 
 
-    # Функция хода компьютера
+    # Ход компьютера
     def makeComputerMove(self, move):
         self.board[move.startRow][move.startCol] = "--"
         self.board[move.endRow][move.endCol] = move.pieceMoved
@@ -238,7 +239,7 @@ class GameState:
                     self.gameOver = True
 
 
-    # Функция удаления последнего хода
+    # Удаление последнего хода
     def undoMove(self):
         if len(self.moveLog) != 0:
             move = self.moveLog.pop()
@@ -408,13 +409,13 @@ def findOptimalMove(gs, validMoves):
         gs.undoMove()
     return bestMove
 
-# Отрисовка доски
+# Отрисовка графики при текущем состоянии игры
 def drawGameState(screen, gs, validMoves, sqSelected):
     drawBoard(screen)
     highlightSquares(screen, gs, validMoves, sqSelected)
     drawPieces(screen, gs.board)
 
-
+# Отрисовка игровой доски
 def drawBoard(screen):
     colors = [p.Color("white"), p.Color("gray")]
     for r in range(DIMENSION):
@@ -422,6 +423,7 @@ def drawBoard(screen):
             color = colors[((r+c) % 2)]
             p.draw.rect(screen, color, p.Rect(c*SQ_SIZE, r*SQ_SIZE, SQ_SIZE, SQ_SIZE))
 
+# Отрисовка фигур
 def drawPieces(screen, board):
     for r in range(DIMENSION):
         for c in range(DIMENSION):
